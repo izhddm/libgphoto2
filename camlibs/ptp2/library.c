@@ -1826,6 +1826,9 @@ static struct {
 	/* via email, https://github.com/gphoto/libgphoto2/issues/1043 */
 	{"Nikon:Z6 III",                  0x04b0, 0x0454, PTP_CAP|PTP_CAP_PREVIEW},
 
+	/* Nikon Z5 II (Z5_2), USB ID 04b0:0456. Released April 2025. */
+	{"Nikon:Z5 II",                   0x04b0, 0x0456, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* http://sourceforge.net/tracker/?func=detail&aid=3536904&group_id=8874&atid=108874 */
 	/* https://github.com/gphoto/libgphoto2/issues/569 */
 	{"Nikon:V1",    		  0x04b0, 0x0601, PTP_CAP|PTP_NIKON_1},
