@@ -4510,6 +4510,9 @@ static struct deviceproptableu16 capture_mode[] = {
 	{ N_("Delayed Remote"),		0x8015, PTP_VENDOR_NIKON}, /* d90 */
 	{ N_("Quiet Release"),		0x8016, PTP_VENDOR_NIKON}, /* d5000 */
 	{ N_("Continuous Quiet Release"),	0x8018, PTP_VENDOR_NIKON}, /* d850 */
+	{ N_("Continuous High Speed (Extended) H+"),	0x8019, PTP_VENDOR_NIKON}, /* Nikon Z5 II H+ mechanical */
+	{ N_("Continuous High Speed 15 fps (C15)"),	0x810f, PTP_VENDOR_NIKON}, /* Nikon Z5 II C15 electronic */
+	{ N_("Continuous High Speed 30 fps (C30)"),	0x811e, PTP_VENDOR_NIKON}, /* Nikon Z5 II C30 electronic */
 
 	{ N_("Continuous Low Speed"),	0x8012, PTP_VENDOR_SONY},
 	{ N_("Selftimer 2s"),		0x8005, PTP_VENDOR_SONY},
