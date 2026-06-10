@@ -9310,6 +9310,46 @@ _put_Nikon_Bulb(CONFIG_PUT_ARGS)
 }
 
 static int
+_get_Nikon_RemoteRelease(CONFIG_GET_ARGS) {
+	int val;
+
+	gp_widget_new (GP_WIDGET_TOGGLE, _(menu->label), widget);
+	gp_widget_set_name (*widget,menu->name);
+	val = 2; /* always changed */
+	gp_widget_set_value  (*widget, &val);
+	return (GP_OK);
+}
+
+/* Press-and-hold remote shutter release: like _put_Nikon_Bulb, but does NOT
+ * force Manual exposure mode / bulb exposure time. In a continuous release
+ * mode (CL/CH/H+/C15/C30) the camera fires a burst at its native rate until
+ * the virtual button is released (remoterelease=0). */
+static int
+_put_Nikon_RemoteRelease(CONFIG_PUT_ARGS)
+{
+	PTPParams *params = &(camera->pl->params);
+	int val;
+
+	CR (gp_widget_get_value(widget, &val));
+	if (val) {
+		char buf[20];
+
+		C_PTP (ptp_nikon_changecameramode (params, 1));
+		/* If there is no capturetarget set yet, the default is "sdram" */
+		if (GP_OK != gp_setting_get("ptp2","capturetarget",buf))
+			strcpy (buf, "sdram");
+
+		C_PTP_MSG (ptp_nikon_capture2 (params, 0/*No AF*/, !strcmp(buf,"sdram")),
+			   "failed to initiate remote release capture");
+		return GP_OK;
+	} else {
+		C_PTP (ptp_nikon_terminatecapture (params, 0, 0));
+		C_PTP (nikon_wait_busy(params, 100, 5000));
+		return GP_OK;
+	}
+}
+
+static int
 _get_OpenCapture(CONFIG_GET_ARGS) {
 	int val;
 
@@ -11431,6 +11471,7 @@ static struct submenu camera_actions_menu[] = {
 	{ N_("Bulb Mode"),                      "bulb",             PTP_DPC_SONY_RequestOneShooting,PTP_VENDOR_SONY,   0,       _get_Sony_Bulb,                 _put_Sony_Bulb },
 	{ N_("Bulb Mode"),                      "bulb",             0,  PTP_VENDOR_CANON,   PTP_OC_CANON_EOS_BulbStart,         _get_Canon_EOS_Bulb,            _put_Canon_EOS_Bulb },
 	{ N_("Bulb Mode"),                      "bulb",             0,  PTP_VENDOR_NIKON,   PTP_OC_NIKON_TerminateCapture,      _get_Nikon_Bulb,                _put_Nikon_Bulb },
+	{ N_("Remote Release"),                 "remoterelease",    0,  PTP_VENDOR_NIKON,   PTP_OC_NIKON_TerminateCapture,      _get_Nikon_RemoteRelease,       _put_Nikon_RemoteRelease },
 	{ N_("Bulb Mode"),                      "bulb",             0,  PTP_VENDOR_GP_OLYMPUS_OMD, PTP_OC_OLYMPUS_OMD_Capture,  _get_Olympus_OMD_Bulb,          _put_Olympus_OMD_Bulb },
 	{ N_("Bulb Mode"),                      "bulb",             0,  PTP_VENDOR_FUJI,    PTP_OC_InitiateCapture,             _get_Fuji_Bulb,                 _put_Fuji_Bulb },
     { N_("Bulb Mode"),                      "bulb",             0,  PTP_VENDOR_PANASONIC,      PTP_OC_PANASONIC_InitiateCapture, _get_Panasonic_Bulb,       _put_Panasonic_Bulb },
